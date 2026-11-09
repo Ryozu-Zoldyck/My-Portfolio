@@ -20,26 +20,25 @@
                             <i data-lucide="mail" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h3 class="font-heading font-bold text-xl text-white">Kirim Pesan Pribadi</h3>
-                            <p class="text-xs text-slate-300/80">Punya tawaran proyek, kerjasama, atau ingin menyapa?</p>
+                            <h3 class="font-heading font-bold text-xl text-white">Kirim Pesan via WhatsApp</h3>
+                            <p class="text-xs text-slate-300/80">Isi form, lalu pesan langsung terkirim ke WhatsApp Aryo.</p>
                         </div>
                     </div>
 
                     <!-- Alert message -->
                     <div id="contact-alert" class="hidden mb-6 p-4 rounded-xl glass-subcard text-emerald-300 text-xs font-mono-code">
-                        ✅ Pesan Anda telah berhasil terkirim ke Aryo! Terima kasih telah menghubungi.
+                        ✅ WhatsApp dibuka dengan pesan Anda. Tekan "Kirim" di aplikasi WhatsApp untuk mengirimnya.
                     </div>
 
-                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-4">
-                        @csrf
+                    <form id="contact-form" data-wa-number="6285714965810" class="space-y-4">
                         <div>
                             <label for="contact-name" class="block text-xs font-mono-code text-slate-200 mb-1.5 uppercase">Nama Lengkap</label>
                             <input type="text" id="contact-name" name="name" required placeholder="Nama Anda" class="w-full px-4 py-3 rounded-xl glass-input text-white placeholder-slate-400 text-sm focus:outline-none">
                         </div>
 
                         <div>
-                            <label for="contact-email" class="block text-xs font-mono-code text-slate-200 mb-1.5 uppercase">Alamat Email</label>
-                            <input type="email" id="contact-email" name="email" required placeholder="email@contoh.com" class="w-full px-4 py-3 rounded-xl glass-input text-white placeholder-slate-400 text-sm focus:outline-none">
+                            <label for="contact-email" class="block text-xs font-mono-code text-slate-200 mb-1.5 uppercase">Alamat Email (opsional)</label>
+                            <input type="email" id="contact-email" name="email" placeholder="email@contoh.com" class="w-full px-4 py-3 rounded-xl glass-input text-white placeholder-slate-400 text-sm focus:outline-none">
                         </div>
 
                         <div>
@@ -52,9 +51,9 @@
                             <textarea id="contact-message" name="message" rows="4" required placeholder="Tuliskan detail pesan Anda di sini..." class="w-full px-4 py-3 rounded-xl glass-input text-white placeholder-slate-400 text-sm focus:outline-none"></textarea>
                         </div>
 
-                        <button type="submit" class="w-full py-3.5 rounded-xl font-heading font-semibold text-sm tracking-wide bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_8px_24px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer">
-                            <i data-lucide="send" class="w-4 h-4"></i>
-                            <span>Kirimkan Pesan</span>
+                        <button type="submit" class="w-full py-3.5 rounded-xl font-heading font-semibold text-sm tracking-wide bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_8px_24px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            <span>Kirim via WhatsApp</span>
                         </button>
                     </form>
                 </div>
@@ -69,44 +68,12 @@
                                 <i data-lucide="message-circle" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h3 class="font-heading font-bold text-xl text-white">Buku Tamu Publik</h3>
-                                <p class="text-xs text-slate-300/80">Tinggalkan jejak, komentar, atau kesan Anda di sini!</p>
+                                <h3 class="font-heading font-bold text-xl text-white">Pesan dari Pengunjung</h3>
+                                <p class="text-xs text-slate-300/80">Kesan dan komentar dari orang-orang yang pernah mampir.</p>
                             </div>
                         </div>
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" title="Database Live"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
                     </div>
-
-                    <!-- Alert message -->
-                    <div id="guestbook-alert" class="hidden mb-4 p-3 rounded-xl glass-subcard text-emerald-300 text-xs font-mono-code">
-                        🎉 Komentar Anda berhasil ditambahkan ke Guestbook!
-                    </div>
-
-                    <!-- Guestbook Input Form -->
-                    <form id="guestbook-form" action="{{ route('guestbook.store') }}" method="POST" class="mb-6 p-4 rounded-2xl glass-subcard space-y-3">
-                        @csrf
-                        <input type="hidden" name="avatar" id="selected-avatar" value="👨‍💻">
-
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <input type="text" name="name" required placeholder="Nama Anda" class="flex-1 px-3 py-2 rounded-lg glass-input text-white placeholder-slate-400 text-xs focus:outline-none">
-                            
-                            <!-- Avatar Picker -->
-                            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                                @foreach(['👨‍💻', '👩‍🚀', '⚡', '🚀', '🔥', '🤖'] as $av)
-                                <button type="button" data-avatar="{{ $av }}" class="avatar-choice w-8 h-8 rounded-lg text-base flex items-center justify-center glass-tag transition-all cursor-pointer {{ $loop->first ? 'ring-2 ring-cyan-400 bg-cyan-900/50' : '' }}">
-                                    {{ $av }}
-                                </button>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="flex gap-2">
-                            <input type="text" name="message" required placeholder="Tuliskan ucapan atau masukan singkat..." class="flex-1 px-3 py-2 rounded-lg glass-input text-white placeholder-slate-400 text-xs focus:outline-none">
-                            <button type="submit" class="px-4 py-2 rounded-lg font-heading font-semibold text-xs bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 shrink-0 transition-all flex items-center gap-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_14px_rgba(6,182,212,0.3)] cursor-pointer">
-                                <span>Kirim</span>
-                                <i data-lucide="corner-down-left" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
-                    </form>
 
                     <!-- Guestbook Comments List -->
                     <div id="guestbook-list" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
@@ -127,7 +94,7 @@
                         </div>
                         @empty
                         <div class="text-center py-8 text-slate-500 text-xs font-mono-code">
-                            Belum ada pesan tamu. Jadilah yang pertama meninggalkan pesan!
+                            Belum ada pesan dari pengunjung.
                         </div>
                         @endforelse
                     </div>

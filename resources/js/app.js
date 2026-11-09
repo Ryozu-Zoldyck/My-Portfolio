@@ -170,139 +170,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 6. Interactive Guestbook Form with AJAX & Confetti
-  const guestbookForm = document.getElementById('guestbook-form');
-  const guestbookList = document.getElementById('guestbook-list');
-  const guestbookSuccessAlert = document.getElementById('guestbook-alert');
-
-  // Avatar selector inside guestbook
-  const avatarChoices = document.querySelectorAll('.avatar-choice');
-  const selectedAvatarInput = document.getElementById('selected-avatar');
-
-  avatarChoices.forEach(choice => {
-    choice.addEventListener('click', () => {
-      avatarChoices.forEach(c => c.classList.remove('ring-2', 'ring-cyan-400', 'bg-cyan-900/50'));
-      choice.classList.add('ring-2', 'ring-cyan-400', 'bg-cyan-900/50');
-      if (selectedAvatarInput) {
-        selectedAvatarInput.value = choice.getAttribute('data-avatar');
-      }
-    });
-  });
-
-  if (guestbookForm) {
-    guestbookForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = guestbookForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Mengirimkan...</span>';
-
-      const formData = new FormData(guestbookForm);
-
-      try {
-        const response = await fetch(guestbookForm.action, {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json',
-          },
-          body: formData,
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-          // Trigger confetti explosion
-          confetti({
-            particleCount: 80,
-            spread: 70,
-            origin: { y: 0.7 },
-            colors: ['#38bdf8', '#818cf8', '#c084fc', '#34d399'],
-          });
-
-          // Prepend new comment to the list
-          if (guestbookList && result.data) {
-            const newCard = document.createElement('div');
-            newCard.className = 'p-4 rounded-xl glass-subcard hover:border-cyan-400/40 transition-all';
-            newCard.innerHTML = `
-              <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full glass-icon-box flex items-center justify-center text-lg shrink-0">
-                  ${result.data.avatar || '👨‍💻'}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between gap-2">
-                    <h4 class="font-semibold text-white text-sm truncate">${escapeHtml(result.data.name)}</h4>
-                    <span class="text-xs text-slate-400 font-mono">${result.data.time_ago || 'Baru saja'}</span>
-                  </div>
-                  <p class="text-slate-200 text-sm mt-1 break-words">${escapeHtml(result.data.message)}</p>
-                </div>
-              </div>
-            `;
-            guestbookList.insertBefore(newCard, guestbookList.firstChild);
-          }
-
-          guestbookForm.reset();
-          if (guestbookSuccessAlert) {
-            guestbookSuccessAlert.classList.remove('hidden');
-            setTimeout(() => guestbookSuccessAlert.classList.add('hidden'), 5000);
-          }
-        }
-      } catch (err) {
-        console.error('Error submitting guestbook:', err);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-        createIcons({ icons });
-      }
-    });
-  }
-
-  // 7. Contact Form AJAX Submission
+  // 6. Contact Form -> WhatsApp (wa.me) redirect
   const contactForm = document.getElementById('contact-form');
   const contactSuccessAlert = document.getElementById('contact-alert');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
+    contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const submitBtn = contactForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Mengirimkan Pesan...</span>';
 
-      const formData = new FormData(contactForm);
+      const waNumber = contactForm.getAttribute('data-wa-number');
+      const data = new FormData(contactForm);
+      const name = (data.get('name') || '').toString().trim();
+      const email = (data.get('email') || '').toString().trim();
+      const subject = (data.get('subject') || '').toString().trim();
+      const message = (data.get('message') || '').toString().trim();
 
-      try {
-        const response = await fetch(contactForm.action, {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json',
-          },
-          body: formData,
-        });
+      const lines = [
+        'Halo Aryo, saya menghubungi lewat website portfolio Ryozu.DEV.',
+        '',
+        `*Nama:* ${name}`,
+      ];
+      if (email) lines.push(`*Email:* ${email}`);
+      if (subject) lines.push(`*Subjek:* ${subject}`);
+      lines.push('', message);
 
-        const result = await response.json();
+      const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
 
-        if (response.ok && result.success) {
-          confetti({
-            particleCount: 100,
-            spread: 80,
-            origin: { y: 0.8 },
-            colors: ['#06b6d4', '#3b82f6', '#a855f7'],
-          });
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.8 },
+        colors: ['#00ff88', '#00f2fe', '#10b981'],
+      });
 
-          contactForm.reset();
-          if (contactSuccessAlert) {
-            contactSuccessAlert.classList.remove('hidden');
-            setTimeout(() => contactSuccessAlert.classList.add('hidden'), 6000);
-          }
-        }
-      } catch (err) {
-        console.error('Error submitting contact form:', err);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-        createIcons({ icons });
+      contactForm.reset();
+      if (contactSuccessAlert) {
+        contactSuccessAlert.classList.remove('hidden');
+        setTimeout(() => contactSuccessAlert.classList.add('hidden'), 8000);
       }
     });
   }
