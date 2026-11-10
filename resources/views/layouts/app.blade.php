@@ -8,7 +8,9 @@
     <meta name="description" content="Portofolio resmi {{ $profile['full_name'] ?? 'Aryo' }} — Fullstack Web Developer, Laravel Specialist & Creative 3D Explorer.">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <link rel="icon" type="image/jpeg" href="images/ryozu-logo.jpg">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="images/ryozu-logo.jpg">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -3,9 +3,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
             
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center font-heading font-extrabold text-white text-sm shadow-md">
-                    R
-                </div>
+                <img src="images/ryozu-logo.jpg" alt="Ryozu Logo" class="w-9 h-9 rounded-xl object-contain bg-black border border-white/15 shadow-[0_0_12px_rgba(34,211,238,0.25)]" />
                 <div>
                     <p class="font-heading font-bold text-white text-sm">
                         Ryozu<span class="text-cyan-400">.DEV</span>
