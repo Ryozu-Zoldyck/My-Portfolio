@@ -83,6 +83,29 @@
                 </div>
             </div>
             @endforeach
+
+            <!-- GitHub Repositories Direct Link Banner -->
+            <div class="col-span-1 md:col-span-2 glass-panel rounded-3xl p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 via-slate-900/70 to-blue-950/40 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-cyan-500/10 blur-2xl pointer-events-none"></div>
+                <div class="flex items-center gap-4 text-center sm:text-left relative z-10">
+                    <div class="w-12 h-12 rounded-2xl glass-icon-box flex items-center justify-center text-white shrink-0">
+                        <x-brand-icon name="github" class="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-bold text-white text-base sm:text-lg flex items-center gap-2 justify-center sm:justify-start">
+                            <span>GitHub Repositories (@Ryozu-Zoldyck)</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono-code font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">8 Repos</span>
+                        </h4>
+                        <p class="text-xs font-mono text-slate-300/80 mt-1">
+                            Semua source code, commit history, dan rincian project di atas dapat Anda inspeksi langsung secara publik di GitHub.
+                        </p>
+                    </div>
+                </div>
+                <a href="https://github.com/Ryozu-Zoldyck?tab=repositories" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-full text-xs font-heading font-semibold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_6px_18px_rgba(6,182,212,0.3)] flex items-center gap-2 shrink-0 transition-all hover:scale-105 active:scale-100 relative z-10">
+                    <span>Lihat Semua Repositori</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+            </div>
         </div>
 
         <!-- 2. TAB VIEW: SKILLS -->
