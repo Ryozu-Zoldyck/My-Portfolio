@@ -661,34 +661,48 @@
 @media (max-width: 767px) {
   .navbar-root {
     padding: 0 12px;
+    top: env(safe-area-inset-top, 6px);
   }
   .navbar-container {
     --navbar-width: 100%;
+    margin-top: 10px;
   }
   .ios-glass-content {
-    justify-content: flex-end;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    padding: 7px 10px;
+    padding: 6px 8px 6px 12px;
+    min-height: 46px;
   }
   .navbar-mobile-brand {
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    flex-direction: row;
+    position: static;
+    transform: none;
     color: #ffffff;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     white-space: nowrap;
-    pointer-events: none;
+    text-decoration: none;
+    pointer-events: auto;
   }
   .navbar-links {
     display: none;
   }
   .navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     padding-left: 0;
+  }
+  .navbar-actions-divider {
+    height: 16px;
+    margin: 0 4px;
   }
   .navbar-mobile-toggle {
     display: flex;

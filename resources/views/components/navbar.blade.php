@@ -31,11 +31,11 @@
                 </a>
             </nav>
 
-            <!-- Mobile Centered Brand -->
-            <span class="navbar-mobile-brand flex items-center gap-2">
-                <img src="images/ryozu-logo.jpg" alt="Ryozu Logo" class="w-6 h-6 rounded-md object-contain bg-black border border-white/15" />
-                <span>Ryozu<span class="text-cyan-400">.DEV</span></span>
-            </span>
+            <!-- Mobile Brand (Clickable to Home, Single Line Row) -->
+            <a href="#home" data-section="home" class="navbar-mobile-brand flex items-center gap-2">
+                <img src="images/ryozu-logo.jpg" alt="Ryozu Logo" class="w-6 h-6 rounded-md object-contain bg-black border border-white/20 shadow-[0_0_8px_rgba(34,211,238,0.3)] shrink-0" />
+                <span class="leading-none font-heading font-bold text-sm tracking-tight text-white">Ryozu<span class="text-cyan-400">.DEV</span></span>
+            </a>
 
             <!-- Right Actions: Divider + Ambient Sound Button + Mobile Toggle -->
             <div class="navbar-actions">
