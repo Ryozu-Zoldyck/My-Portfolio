@@ -58,7 +58,7 @@ class PortfolioController extends Controller
                 [
                     'name' => 'TikTok',
                     'icon' => 'tiktok',
-                    'url' => 'https://www.tiktok.com/@mie_ayamm__3',
+                    'url' => 'https://www.tiktok.com/@ryozuholic',
                     'hover' => 'hover:text-teal-300 hover:border-teal-400/50 hover:shadow-[0_0_15px_rgba(45,212,191,0.3)]',
                 ],
             ],
