@@ -297,6 +297,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Clean Section URL Routing (No Hash / Pager Symbol)
+  function getBasePath() {
+    const path = window.location.pathname;
+    if (window.location.hostname.endsWith('github.io')) {
+      const m = path.match(/^(\/[^\/]+)/);
+      if (m) return m[1].replace(/\/+$/, '');
+    }
+    return '';
+  }
+
+  function formatSectionPath(sectionId) {
+    const base = getBasePath();
+    const norm = sectionId === 'experience' ? 'portfolio' : sectionId;
+    if (!norm || norm === 'home') {
+      return base ? `${base}/` : '/';
+    }
+    return base ? `${base}/${norm}` : `/${norm}`;
+  }
+
+  let currentUrlSection = null;
+  function updateSectionUrl(sectionId, push = false) {
+    const norm = sectionId === 'experience' ? 'portfolio' : sectionId;
+    if (currentUrlSection === norm && !window.location.hash) return;
+    currentUrlSection = norm;
+
+    const targetPath = formatSectionPath(norm);
+    if (window.location.pathname !== targetPath || window.location.hash) {
+      if (push) {
+        window.history.pushState({ section: norm }, '', targetPath);
+      } else {
+        window.history.replaceState({ section: norm }, '', targetPath);
+      }
+    }
+  }
+
+  function scrollToSection(sectionId, pushHistory = true) {
+    const targetElem = document.getElementById(sectionId);
+    if (!targetElem) return;
+
+    targetElem.scrollIntoView({ behavior: 'smooth' });
+    setActiveNavSection(sectionId);
+    updateSectionUrl(sectionId, pushHistory);
+  }
+
   function setActiveNavSection(sectionId) {
     const normalized = sectionId === 'experience' ? 'portfolio' : sectionId;
     navLinks.forEach(link => {
@@ -309,11 +353,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      const target = link.getAttribute('data-section');
-      if (target) setActiveNavSection(target);
+  // Intercept all internal anchor links (navbar, mobile drawer, hero, about, footer)
+  // so browser navigates cleanly without '#' in the URL bar
+  document.querySelectorAll('a[href^="#"], a[data-section]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href') || '';
+      const dataSec = link.getAttribute('data-section');
+      const targetId = dataSec || href.replace(/^#/, '');
+
+      if (!targetId || targetId === '#') return;
+      const targetElem = document.getElementById(targetId);
+      if (!targetElem) return;
+
+      e.preventDefault();
+      scrollToSection(targetId, true);
       playGlassTap(660);
+
+      if (mobileMenuDrawer && mobileMenuDrawer.classList.contains('is-open')) {
+        mobileMenuDrawer.classList.remove('is-open');
+      }
     });
   });
 
@@ -337,6 +395,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     setActiveNavSection(currentSection);
+    // Keep browser URL cleanly in sync with current visible section (no '#' symbol)
+    updateSectionUrl(currentSection, false);
   }
 
   let scrollTicking = false;
@@ -358,16 +418,48 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileMenuDrawer.classList.toggle('is-open');
       playGlassTap(580);
     });
-
-    mobileMenuLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        const target = link.getAttribute('data-section');
-        if (target) setActiveNavSection(target);
-        mobileMenuDrawer.classList.remove('is-open');
-        playGlassTap(660);
-      });
-    });
   }
+
+  // Initial URL check: remove existing hash (#about -> /about) or scroll to route path
+  if (window.location.hash) {
+    const hashSec = window.location.hash.replace('#', '');
+    if (document.getElementById(hashSec)) {
+      updateSectionUrl(hashSec, false);
+      setTimeout(() => {
+        const el = document.getElementById(hashSec);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 180);
+    }
+  } else {
+    const path = window.location.pathname;
+    const base = getBasePath();
+    const sub = (base && path.startsWith(base)) ? path.slice(base.length) : path;
+    const initialSec = sub.replace(/^\/+|\/+$/g, '');
+    if (initialSec && initialSec !== 'home' && document.getElementById(initialSec)) {
+      setTimeout(() => {
+        const el = document.getElementById(initialSec);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          setActiveNavSection(initialSec);
+          currentUrlSection = initialSec;
+        }
+      }, 180);
+    }
+  }
+
+  // Handle browser back and forward button navigation
+  window.addEventListener('popstate', () => {
+    const path = window.location.pathname;
+    const base = getBasePath();
+    const sub = (base && path.startsWith(base)) ? path.slice(base.length) : path;
+    const sec = sub.replace(/^\/+|\/+$/g, '') || 'home';
+    const targetElem = document.getElementById(sec);
+    if (targetElem) {
+      targetElem.scrollIntoView({ behavior: 'smooth' });
+      setActiveNavSection(sec);
+      currentUrlSection = sec;
+    }
+  });
 
   // 9. Confetti Celebration Trigger
   const confettiTriggers = document.querySelectorAll('.confetti-trigger');
