@@ -1,0 +1,26 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-DUQQ3_1P.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-D513qo0Y.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/lanyard-3d.js"
+    ]
+  },
+  "resources/js/lanyard-3d.js": {
+    "file": "assets/lanyard-3d-DGHJc0sg.js",
+    "name": "lanyard-3d",
+    "src": "resources/js/lanyard-3d.js",
+    "isDynamicEntry": true
+  }
+}
