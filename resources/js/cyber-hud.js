@@ -7,10 +7,10 @@
  */
 export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
   const canvas = document.getElementById(canvasId);
-  if (!canvas) return null;
+  if (!canvas) return;
 
   const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return null;
+  if (!ctx) return;
 
   let width = 0;
   let height = 0;
@@ -19,8 +19,6 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
   let binaryColumns = [];
   let spectrumBars = [];
   let floatingNodes = [];
-  let animationFrameId = null;
-  let isRunning = false;
 
   function setupStreams() {
     binaryColumns = [];
@@ -300,48 +298,8 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
     }
-
-    if (isRunning) {
-      animationFrameId = requestAnimationFrame(render);
-    }
   }
 
-  function start() {
-    if (isRunning) return;
-    isRunning = true;
-    lastTime = performance.now();
-    animationFrameId = requestAnimationFrame(render);
-  }
-
-  function stop() {
-    isRunning = false;
-    if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = null;
-    }
-    ctx.clearRect(0, 0, width, height);
-  }
-
-  // Listen for graphics mode switch events
-  window.addEventListener('graphics-mode-change', (e) => {
-    const mode = e.detail?.mode;
-    if (mode === 'performance') {
-      stop();
-    } else {
-      start();
-    }
-  });
-
-  // Start initially unless explicitly configured in performance mode
-  const initialMode = localStorage.getItem('ryozu_graphics_mode') || 'visual';
-  if (initialMode !== 'performance') {
-    start();
-  }
-
-  return {
-    start,
-    stop,
-    isRunning: () => isRunning,
-  };
+  requestAnimationFrame(render);
 }
 

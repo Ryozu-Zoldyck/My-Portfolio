@@ -30,22 +30,9 @@
                 Ryozu<span class="text-cyan-400">.DEV</span>
             </span>
 
-            <!-- Right Actions: Divider + Graphics Mode + Sound Button + Mobile Toggle -->
+            <!-- Right Actions: Divider + Ambient Sound Button + Mobile Toggle -->
             <div class="navbar-actions">
                 <span class="navbar-actions-divider" aria-hidden="true"></span>
-
-                <!-- Graphics Mode Toggle Button (Visual vs Performance) -->
-                <button
-                    id="graphics-mode-btn"
-                    type="button"
-                    class="navbar-icon-btn hidden sm:inline-flex"
-                    aria-label="Ganti Mode Grafis (Visual / Performa)"
-                    title="Mode Grafis (Visual / Performa)"
-                    data-mode="visual"
-                >
-                    <i id="gfx-icon-visual" data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
-                    <i id="gfx-icon-perf" data-lucide="zap" class="w-4 h-4 text-amber-400 hidden"></i>
-                </button>
 
                 <button
                     id="sound-toggle-btn"
@@ -89,22 +76,6 @@
             <a href="#contact" data-section="contact" class="mobile-nav-link px-4 py-2.5 rounded-full text-sm font-bold text-slate-200/80 hover:text-white hover:bg-white/10 transition-colors">
                 Contact
             </a>
-
-            <!-- Mobile Quick Graphics Switch -->
-            <div class="pt-3 mt-2 border-t border-white/10 flex items-center justify-between px-2">
-                <span class="text-xs font-mono text-slate-300 flex items-center gap-1.5">
-                    <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i>
-                    <span>Mode Tampilan</span>
-                </span>
-                <button
-                    id="mobile-gfx-toggle"
-                    type="button"
-                    class="px-3 py-1.5 text-xs font-mono font-semibold rounded-full border border-cyan-400/40 bg-cyan-500/10 text-cyan-300 flex items-center gap-1.5 hover:bg-cyan-500/20 active:scale-95 transition-all"
-                >
-                    <i id="mobile-gfx-icon" data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
-                    <span id="mobile-gfx-label">Visual (FX Aktif)</span>
-                </button>
-            </div>
         </div>
     </div>
 </header>

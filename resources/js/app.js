@@ -4,7 +4,7 @@ import {
   ArrowRight, ArrowUp, Award, CheckCircle, Cloud, Code2, Cpu, Database,
   ExternalLink, Folder, Globe, GraduationCap, Hand, Layers, Mail, Menu,
   MessageCircle, MessageSquare, Music, Send, Server, ShieldCheck, ShoppingBag,
-  Sparkles, Trophy, Video, Volume2, VolumeX, Wrench, X, Zap,
+  Sparkles, Trophy, Video, Volume2, VolumeX, Wrench, X,
 } from 'lucide';
 import confetti from 'canvas-confetti';
 import { initCyberHudCanvas } from './cyber-hud';
@@ -14,17 +14,19 @@ const icons = {
   ArrowRight, ArrowUp, Award, CheckCircle, Cloud, Code2, Cpu, Database,
   ExternalLink, Folder, Globe, GraduationCap, Hand, Layers, Mail, Menu,
   MessageCircle, MessageSquare, Music, Send, Server, ShieldCheck, ShoppingBag,
-  Sparkles, Trophy, Video, Volume2, VolumeX, Wrench, X, Zap,
+  Sparkles, Trophy, Video, Volume2, VolumeX, Wrench, X,
 };
 
+const isPhone = window.matchMedia('(max-width: 768px)').matches;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Lucide Icons
   createIcons({ icons });
 
-  // 1b. Cyber HUD canvas: can run on both mobile & desktop based on Graphics Mode
-  if (!reduceMotion) {
+  // 1b. Cyber HUD canvas: desktop only. On phones the full-screen animated canvas is the
+  //     single biggest cost while scrolling, so the static CSS/SVG background is used instead.
+  if (!isPhone && !reduceMotion) {
     try {
       initCyberHudCanvas('cyber-hud-canvas');
     } catch (err) {
@@ -379,91 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 10. Graphics Mode Controller (Visual Mode vs Performance Mode)
-  const graphicsBtn = document.getElementById('graphics-mode-btn');
-  const gfxIconVisual = document.getElementById('gfx-icon-visual');
-  const gfxIconPerf = document.getElementById('gfx-icon-perf');
-  const mobileGfxToggle = document.getElementById('mobile-gfx-toggle');
-  const mobileGfxLabel = document.getElementById('mobile-gfx-label');
-
-  let toastTimer = null;
-  function showModeToast(message, isPerf = false) {
-    let toast = document.getElementById('gfx-mode-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'gfx-mode-toast';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = message;
-    if (isPerf) {
-      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-4 py-2.5 rounded-full font-mono text-xs font-bold border border-amber-400/40 bg-slate-900/95 text-amber-300 backdrop-blur-md shadow-[0_0_25px_rgba(251,191,36,0.35)] transition-all duration-300 opacity-100 translate-y-0';
-    } else {
-      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-4 py-2.5 rounded-full font-mono text-xs font-bold border border-cyan-400/40 bg-slate-900/95 text-cyan-300 backdrop-blur-md shadow-[0_0_25px_rgba(34,211,238,0.35)] transition-all duration-300 opacity-100 translate-y-0';
-    }
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-4 py-2.5 rounded-full font-mono text-xs font-bold border transition-all duration-300 opacity-0 translate-y-3';
-    }, 2600);
-  }
-
-  function applyGraphicsMode(mode, showFeedback = false) {
-    const isPerf = mode === 'performance';
-    document.documentElement.classList.toggle('mode-performance', isPerf);
-    document.documentElement.classList.toggle('mode-visual', !isPerf);
-    localStorage.setItem('ryozu_graphics_mode', mode);
-
-    if (graphicsBtn) {
-      graphicsBtn.setAttribute('data-mode', mode);
-      if (gfxIconVisual && gfxIconPerf) {
-        gfxIconVisual.classList.toggle('hidden', isPerf);
-        gfxIconPerf.classList.toggle('hidden', !isPerf);
-      }
-    }
-
-    if (mobileGfxLabel) {
-      mobileGfxLabel.textContent = isPerf ? 'Performa (Hemat)' : 'Visual (FX Aktif)';
-    }
-    if (mobileGfxToggle) {
-      if (isPerf) {
-        mobileGfxToggle.className = 'px-3 py-1.5 text-xs font-mono font-semibold rounded-full border border-amber-400/40 bg-amber-500/10 text-amber-300 flex items-center gap-1.5 transition-all';
-      } else {
-        mobileGfxToggle.className = 'px-3 py-1.5 text-xs font-mono font-semibold rounded-full border border-cyan-400/40 bg-cyan-500/10 text-cyan-300 flex items-center gap-1.5 transition-all';
-      }
-    }
-
-    window.dispatchEvent(new CustomEvent('graphics-mode-change', { detail: { mode } }));
-
-    if (showFeedback) {
-      playGlassTap(isPerf ? 480 : 880);
-      showModeToast(
-        isPerf
-          ? '⚡ Mode Performa: Animasi diringankan, super smooth & hemat baterai!'
-          : '✨ Mode Visual: Cyber HUD & semua animasi visual aktif!',
-        isPerf
-      );
-    }
-  }
-
-  const savedMode = localStorage.getItem('ryozu_graphics_mode') || 'visual';
-  applyGraphicsMode(savedMode, false);
-
-  if (graphicsBtn) {
-    graphicsBtn.addEventListener('click', () => {
-      const current = localStorage.getItem('ryozu_graphics_mode') || 'visual';
-      const next = current === 'visual' ? 'performance' : 'visual';
-      applyGraphicsMode(next, true);
-    });
-  }
-
-  if (mobileGfxToggle) {
-    mobileGfxToggle.addEventListener('click', () => {
-      const current = localStorage.getItem('ryozu_graphics_mode') || 'visual';
-      const next = current === 'visual' ? 'performance' : 'visual';
-      applyGraphicsMode(next, true);
-    });
-  }
-
-  // 11. Helper function to escape HTML
+  // 10. Helper function to escape HTML
   function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;

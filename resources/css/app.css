@@ -702,69 +702,73 @@
 }
 
 /* =========================================================
-   Graphics Modes: Visual (Full FX) vs Performance (Ultra Smooth)
-   Users can toggle this via Navbar / Drawer switch.
+   Mobile Performance & Smoothness (max-width: 768px)
+   Goal: zero backdrop-filter, no always-running animations,
+   nothing that forces a repaint of large areas while scrolling.
    ========================================================= */
-
-/* Mode Performa: Minimal GPU overhead, zero backdrop blur, maximum battery savings */
-html.mode-performance #cyber-hud-canvas {
-  display: none !important;
-}
-
-html.mode-performance .cyber-dot-matrix {
-  display: none !important;
-}
-
-html.mode-performance .circuit-trace {
-  animation: none !important;
-  filter: none !important;
-  stroke-dasharray: none !important;
-}
-
-html.mode-performance .animate-ping,
-html.mode-performance .animate-pulse,
-html.mode-performance .navbar-active-pill {
-  animation: none !important;
-}
-
-html.mode-performance .glass-panel,
-html.mode-performance .glass-subcard,
-html.mode-performance .glass-icon-box,
-html.mode-performance .glass-tag,
-html.mode-performance .glass-input,
-html.mode-performance .portfolio-tab-btn,
-html.mode-performance .ios-glass-surface {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-
-html.mode-performance .glass-panel::before,
-html.mode-performance .glass-panel::after,
-html.mode-performance .ios-glass-sheen,
-html.mode-performance .ios-glass-rim {
-  display: none !important;
-}
-
-html.mode-performance .ambient-glow-green,
-html.mode-performance .ambient-glow-cyan {
-  opacity: 0.15 !important;
-  transform: scale(0.6) !important;
-}
-
-/* Mode Visual on Mobile: Allow full cyberpunk canvas & animations, optimized for mobile screen */
 @media (max-width: 768px) {
-  #cyber-hud-canvas {
-    opacity: 0.72;
+  /* 1. No backdrop-filter anywhere: it re-blurs everything under it on every scrolled frame */
+  .glass-panel,
+  .glass-subcard,
+  .glass-icon-box,
+  .glass-tag,
+  .glass-input,
+  .portfolio-tab-btn,
+  .ios-glass-surface {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
-  /* Keep touch scrolling natural */
-  body {
-    -webkit-tap-highlight-color: transparent;
+  /* 2. Solid-ish backgrounds + light shadows keep the glass look without the GPU cost */
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.78), rgba(8, 13, 28, 0.92)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+    transition: none !important;
+  }
+  .glass-subcard { background: rgba(255, 255, 255, 0.07) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important; }
+  .glass-tag { background: rgba(255, 255, 255, 0.09) !important; box-shadow: none !important; }
+  .glass-icon-box { background: rgba(14, 165, 233, 0.16) !important; box-shadow: none !important; }
+  .glass-input { background: rgba(15, 23, 42, 0.8) !important; box-shadow: none !important; }
+  .portfolio-tab-btn { box-shadow: none !important; }
+
+  .ios-glass-surface {
+    background: rgba(10, 15, 30, 0.86) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 18px rgba(0, 0, 0, 0.4) !important;
   }
 
-  #about, #portfolio, #experience, #contact {
-    contain-intrinsic-size: 1px 900px;
+  /* 3. Drop decorative pseudo layers (mouse glare + rim mask are expensive to composite) */
+  .glass-panel::before,
+  .glass-panel::after,
+  .ios-glass-sheen,
+  .ios-glass-rim {
+    display: none !important;
   }
+
+  /* 4. No hover lifts on touch */
+  .glass-panel-hover:hover { transform: none !important; }
+
+  /* 5. Stop every infinite decorative animation (each one keeps the GPU awake) */
+  .animate-ping,
+  .animate-pulse,
+  .navbar-active-pill,
+  .circuit-trace {
+    animation: none !important;
+  }
+  .circuit-trace { filter: none !important; stroke-dasharray: none !important; }
+
+  /* 6. Hide the animated full-screen canvas + purely decorative heavy layers */
+  #cyber-hud-canvas { display: none !important; }
+  .cyber-dot-matrix { display: none !important; }
+
+  /* 7. Big blurred orbs -> smaller, cheaper gradients */
+  .ambient-glow-green, .ambient-glow-cyan { transform: scale(0.7); }
+
+  /* 8. Skip rendering off-screen sections until needed */
+  #about, #portfolio, #experience, #contact { contain-intrinsic-size: 1px 900px; }
+
+  /* 9. Lighter scrolling behaviour */
+  html { scroll-behavior: auto; }
+  body { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
