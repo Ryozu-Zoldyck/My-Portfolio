@@ -1,25 +1,49 @@
 import './bootstrap';
-import { createIcons, icons } from 'lucide';
+import {
+  createIcons,
+  ArrowRight, ArrowUp, Award, CheckCircle, Cloud, Code2, Cpu, Database,
+  ExternalLink, Folder, Globe, GraduationCap, Hand, Layers, Mail, Menu,
+  MessageCircle, MessageSquare, Music, Send, Server, ShieldCheck, ShoppingBag,
+  Sparkles, Trophy, Video, Volume2, VolumeX, Wrench, X,
+} from 'lucide';
 import confetti from 'canvas-confetti';
-import { initLanyard3D } from './lanyard-3d';
 import { initCyberHudCanvas } from './cyber-hud';
+
+// Only the icons actually used (instead of bundling the whole lucide set)
+const icons = {
+  ArrowRight, ArrowUp, Award, CheckCircle, Cloud, Code2, Cpu, Database,
+  ExternalLink, Folder, Globe, GraduationCap, Hand, Layers, Mail, Menu,
+  MessageCircle, MessageSquare, Music, Send, Server, ShieldCheck, ShoppingBag,
+  Sparkles, Trophy, Video, Volume2, VolumeX, Wrench, X,
+};
+
+const isPhone = window.matchMedia('(max-width: 768px)').matches;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Lucide Icons
   createIcons({ icons });
 
-  // 1b. Initialize Cyber HUD Background Canvas (Binary Rain + Wireframe Terrain)
-  try {
-    initCyberHudCanvas('cyber-hud-canvas');
-  } catch (err) {
-    console.warn('Cyber HUD Canvas note:', err);
+  // 1b. Cyber HUD canvas: desktop only. On phones the full-screen animated canvas is the
+  //     single biggest cost while scrolling, so the static CSS/SVG background is used instead.
+  if (!isPhone && !reduceMotion) {
+    try {
+      initCyberHudCanvas('cyber-hud-canvas');
+    } catch (err) {
+      console.warn('Cyber HUD Canvas note:', err);
+    }
   }
 
-  // 2. Initialize 3D Lanyard
-  try {
-    initLanyard3D('lanyard-canvas-container');
-  } catch (err) {
-    console.warn('3D Lanyard initialization note:', err);
+  // 2. 3D Lanyard: lazy-loaded (three.js is a separate chunk) after first paint
+  const startLanyard = () => {
+    import('./lanyard-3d')
+      .then(({ initLanyard3D }) => initLanyard3D('lanyard-canvas-container'))
+      .catch((err) => console.warn('3D Lanyard initialization note:', err));
+  };
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(startLanyard, { timeout: 1200 });
+  } else {
+    setTimeout(startLanyard, 250);
   }
 
   // 3. Typewriter Effect for Hero Subtitle

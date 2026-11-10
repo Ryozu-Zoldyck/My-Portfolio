@@ -1,5 +1,5 @@
 <!-- Cyberpunk / Tech Hacker / Cyber HUD Background System -->
-<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none" aria-hidden="true">
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none transform-gpu" style="contain: strict;" aria-hidden="true">
 
     <!-- 1. Deep Base Layer & Blueprint Tech Grid -->
     <div class="absolute inset-0 bg-[#030712]"></div>

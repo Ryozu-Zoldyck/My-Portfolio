@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -360,22 +359,33 @@
   touch-action: none;
 }
 
+@media (max-width: 767px) {
+  #lanyard-canvas-container {
+    /* Let vertical swipes scroll the page instead of getting trapped by the 3D card */
+    touch-action: pan-y;
+    height: 440px;
+  }
+}
+
 @media (min-width: 768px) {
   #lanyard-canvas-container {
     height: 580px;
   }
 }
 
-/* Sound Equalizer Bars */
+/* Sound Equalizer Bars (transform-based: runs on the compositor, no layout per frame) */
 @keyframes barJump {
-  0%, 100% { height: 6px; }
-  50% { height: 26px; }
+  0%, 100% { transform: scaleY(0.23); }
+  50% { transform: scaleY(1); }
 }
 
 .eq-bar {
   width: 3px;
+  height: 26px;
   background: #38bdf8;
   border-radius: 9999px;
+  transform-origin: bottom;
+  will-change: transform;
   animation: barJump 1.2s ease-in-out infinite;
 }
 
@@ -688,54 +698,80 @@
 }
 
 /* =========================================================
-   Mobile Performance & Battery Optimization (max-width: 768px)
+   Mobile Performance & Smoothness (max-width: 768px)
+   Goal: zero backdrop-filter, no always-running animations,
+   nothing that forces a repaint of large areas while scrolling.
    ========================================================= */
 @media (max-width: 768px) {
-  /* 1. Simplify glass panels on mobile: lower blur, no stacked composite lag */
-  .glass-panel {
-    -webkit-backdrop-filter: blur(8px) !important;
-    backdrop-filter: blur(8px) !important;
-    background: rgba(10, 15, 30, 0.88) !important;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
-  }
-
-  /* 2. Disable heavy nested backdrop-filter on small sub-elements inside cards */
+  /* 1. No backdrop-filter anywhere: it re-blurs everything under it on every scrolled frame */
+  .glass-panel,
   .glass-subcard,
   .glass-icon-box,
   .glass-tag,
-  .glass-input {
+  .glass-input,
+  .portfolio-tab-btn,
+  .ios-glass-surface {
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
   }
 
-  .glass-subcard {
-    background: rgba(255, 255, 255, 0.06) !important;
+  /* 2. Solid-ish backgrounds + light shadows keep the glass look without the GPU cost */
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.78), rgba(8, 13, 28, 0.92)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+    transition: none !important;
+  }
+  .glass-subcard { background: rgba(255, 255, 255, 0.07) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important; }
+  .glass-tag { background: rgba(255, 255, 255, 0.09) !important; box-shadow: none !important; }
+  .glass-icon-box { background: rgba(14, 165, 233, 0.16) !important; box-shadow: none !important; }
+  .glass-input { background: rgba(15, 23, 42, 0.8) !important; box-shadow: none !important; }
+  .portfolio-tab-btn { box-shadow: none !important; }
+
+  .ios-glass-surface {
+    background: rgba(10, 15, 30, 0.86) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 18px rgba(0, 0, 0, 0.4) !important;
   }
 
-  .glass-tag {
-    background: rgba(255, 255, 255, 0.08) !important;
-  }
-
-  .glass-icon-box {
-    background: rgba(14, 165, 233, 0.15) !important;
-  }
-
-  .glass-input {
-    background: rgba(15, 23, 42, 0.75) !important;
-  }
-
-  /* 3. Disable mouse glare gradient pseudo-element on touch screens */
-  .glass-panel::before {
+  /* 3. Drop decorative pseudo layers (mouse glare + rim mask are expensive to composite) */
+  .glass-panel::before,
+  .glass-panel::after,
+  .ios-glass-sheen,
+  .ios-glass-rim {
     display: none !important;
   }
 
-  /* 4. Disable heavy hover translation on touch devices */
-  .glass-panel-hover:hover {
-    transform: none !important;
-  }
+  /* 4. No hover lifts on touch */
+  .glass-panel-hover:hover { transform: none !important; }
 
-  /* 5. Disable heavy SVG filter during animation on mobile */
+  /* 5. Stop every infinite decorative animation (each one keeps the GPU awake) */
+  .animate-ping,
+  .animate-pulse,
+  .navbar-active-pill,
   .circuit-trace {
-    filter: none !important;
+    animation: none !important;
+  }
+  .circuit-trace { filter: none !important; stroke-dasharray: none !important; }
+
+  /* 6. Hide the animated full-screen canvas + purely decorative heavy layers */
+  #cyber-hud-canvas { display: none !important; }
+  .cyber-dot-matrix { display: none !important; }
+
+  /* 7. Big blurred orbs -> smaller, cheaper gradients */
+  .ambient-glow-green, .ambient-glow-cyan { transform: scale(0.7); }
+
+  /* 8. Skip rendering off-screen sections until needed */
+  #about, #portfolio, #experience, #contact { contain-intrinsic-size: 1px 900px; }
+
+  /* 9. Lighter scrolling behaviour */
+  html { scroll-behavior: auto; }
+  body { -webkit-tap-highlight-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

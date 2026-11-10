@@ -15,7 +15,8 @@ const isMobileDevice = typeof window !== 'undefined' && (
 
 const SEGMENTS = 4; // 5 nodes (0..4)
 const INV_NODE_MASS = 20;
-const STEP_DT = isMobileDevice ? 1 / 360 : 1 / 960;
+const STEP_DT = isMobileDevice ? 1 / 300 : 1 / 960;
+const MOBILE_FRAME_MS = 1000 / 32; // cap lanyard to ~30fps on phones (steady beats spiky 60)
 const SOLVER_ITERS = 2;
 const RIBBON_ROWS = isMobileDevice ? 36 : 72;
 const CAMERA_FOV = 24;
@@ -23,7 +24,7 @@ const BASE_STRAP_WIDTH = 0.36;
 const SPLIT_RING_RADIUS = 0.095;
 const SPLIT_RING_TUBE = 0.0135;
 const EYELET_RADIUS = 0.036;
-const CARD_TEX_WIDTH = 1024;
+const CARD_TEX_WIDTH = isMobileDevice ? 768 : 1024;
 
 const FINISH_PRESETS = {
   glossy: { roughness: 0.42, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, foil: 0.15, anisotropy: 0 },
@@ -884,7 +885,7 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !isMobileDevice,
       alpha: true,
       powerPreference: 'high-performance',
     });
@@ -959,33 +960,35 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
   };
 
   const finishPreset = FINISH_PRESETS[config.finish];
+  // Phones: skip clearcoat layer + foil voronoi shader (most expensive fragment work)
+  const coat = isMobileDevice ? 0 : finishPreset.clearcoat;
   const frontMat = new THREE.MeshPhysicalMaterial({
     map: frontTex,
     normalMap: cardNormalMap,
     normalScale: new THREE.Vector2(0.06, 0.06),
-    roughness: finishPreset.roughness,
+    roughness: isMobileDevice ? 0.32 : finishPreset.roughness,
     metalness: finishPreset.metalness,
-    clearcoat: finishPreset.clearcoat,
+    clearcoat: coat,
     clearcoatRoughness: finishPreset.clearcoatRoughness,
   });
-  frontMat.onBeforeCompile = applyFoilShader;
+  if (!isMobileDevice) frontMat.onBeforeCompile = applyFoilShader;
 
   const backMat = new THREE.MeshPhysicalMaterial({
     map: backTex,
     normalMap: cardNormalMap,
     normalScale: new THREE.Vector2(0.06, 0.06),
-    roughness: finishPreset.roughness,
+    roughness: isMobileDevice ? 0.32 : finishPreset.roughness,
     metalness: finishPreset.metalness,
-    clearcoat: finishPreset.clearcoat,
+    clearcoat: coat,
     clearcoatRoughness: finishPreset.clearcoatRoughness,
   });
-  backMat.onBeforeCompile = applyFoilShader;
+  if (!isMobileDevice) backMat.onBeforeCompile = applyFoilShader;
 
   const bodyMat = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color('#060f24'),
     roughness: 0.3,
     metalness: 0.1,
-    clearcoat: 1,
+    clearcoat: isMobileDevice ? 0 : 1,
     clearcoatRoughness: 0.08,
   });
 
@@ -1005,7 +1008,7 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
     normalMap: strapNormalMap,
     normalScale: new THREE.Vector2(0.7, 0.7),
     roughness: 0.68,
-    sheen: 1.0,
+    sheen: isMobileDevice ? 0 : 1.0,
     sheenRoughness: 0.42,
     sheenColor: new THREE.Color(0.32, 0.32, 0.34),
     side: THREE.DoubleSide,
@@ -1089,7 +1092,7 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
   function updateFraming(isInitial = false) {
     const w = Math.max(1, container.clientWidth);
     const h = Math.max(1, container.clientHeight);
-    const maxDpr = isMobileDevice ? 1.2 : 1.75;
+    const maxDpr = isMobileDevice ? 1 : 1.75;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     renderer.setSize(w, h, false);
 
@@ -1387,6 +1390,7 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
 
   // Animation Loop
   let lastTime = performance.now();
+  let lastFrameAt = 0;
   let elapsed = 0;
 
   function animate(now) {
@@ -1396,6 +1400,12 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
     if (!isCanvasVisible || document.hidden) {
       return;
     }
+
+    // Phones: fixed ~30fps cadence keeps frame times even (feels smoother than uneven 60)
+    if (isMobileDevice && now - lastFrameAt < MOBILE_FRAME_MS - 1) {
+      return;
+    }
+    lastFrameAt = now;
 
     const dt = clamp((now - lastTime) / 1000, 1 / 240, 1 / 30);
     lastTime = now;
