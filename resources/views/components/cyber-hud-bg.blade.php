@@ -7,12 +7,12 @@
 
     <!-- 2. Strong Radial Ambient Glow (Right / Behind 3D ID Card & Bottom Horizon) -->
     <!-- Matrix Cyber Green Core Glow -->
-    <div class="absolute top-[12%] right-[10%] w-[480px] h-[520px] rounded-full bg-[#00ff88]/25 blur-[135px] animate-pulse"></div>
+    <div class="absolute top-[12%] right-[10%] w-[480px] h-[520px] rounded-full ambient-glow-green animate-pulse"></div>
     <!-- Neon Cyan Outer Glow -->
-    <div class="absolute top-[22%] right-[6%] w-[560px] h-[560px] rounded-full bg-[#00f2fe]/25 blur-[150px]"></div>
+    <div class="absolute top-[22%] right-[6%] w-[560px] h-[560px] rounded-full ambient-glow-cyan"></div>
     <!-- Secondary Teal/Emerald Horizon Glow -->
-    <div class="absolute -bottom-24 left-1/3 w-[650px] h-[320px] rounded-full bg-cyan-500/15 blur-[140px]"></div>
-    <div class="absolute top-1/4 left-[8%] w-[380px] h-[380px] rounded-full bg-blue-600/10 blur-[140px]"></div>
+    <div class="absolute -bottom-24 left-1/3 w-[650px] h-[320px] rounded-full ambient-glow-teal hidden sm:block"></div>
+    <div class="absolute top-1/4 left-[8%] w-[380px] h-[380px] rounded-full ambient-glow-blue hidden sm:block"></div>
 
     <!-- 3. Dot-Matrix Halftone Clusters (Top-Center-Left & Left-Middle like Reference) -->
     <div class="absolute top-6 left-[27%] w-56 h-36 cyber-dot-matrix opacity-25 hidden md:block"></div>

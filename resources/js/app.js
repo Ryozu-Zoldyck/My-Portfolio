@@ -91,16 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 4b. Interactive Mouse-Follow Liquid Glass Specular Glare on all .glass-panel cards
-  document.querySelectorAll('.glass-panel').forEach(panel => {
-    panel.addEventListener('mousemove', (e) => {
-      const rect = panel.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      panel.style.setProperty('--mouse-x', `${x}px`);
-      panel.style.setProperty('--mouse-y', `${y}px`);
+  // 4b. Interactive Mouse-Follow Liquid Glass Specular Glare (Desktop only to save mobile battery)
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.glass-panel').forEach(panel => {
+      panel.addEventListener('mousemove', (e) => {
+        const rect = panel.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        panel.style.setProperty('--mouse-x', `${x}px`);
+        panel.style.setProperty('--mouse-y', `${y}px`);
+      }, { passive: true });
     });
-  });
+  }
 
   // 5. Project Modal Details
   const projectModal = document.getElementById('project-modal');
@@ -313,7 +315,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveNavSection(currentSection);
   }
 
-  window.addEventListener('scroll', handleNavbarScroll, { passive: true });
+  let scrollTicking = false;
+  function onScroll() {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        handleNavbarScroll();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
   handleNavbarScroll();
 
   if (mobileMenuBtn && mobileMenuDrawer) {

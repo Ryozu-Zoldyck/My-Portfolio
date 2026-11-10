@@ -8,11 +8,16 @@ const LAYOUTS = {
 const ANCHORS = { left: 0.27, center: 0.5, right: 0.73 };
 const CARD_DEPTH = 0.018;
 const CARD_BEVEL = 0.007;
+const isMobileDevice = typeof window !== 'undefined' && (
+  window.innerWidth < 768 ||
+  ('ontouchstart' in window && window.innerWidth < 1024)
+);
+
 const SEGMENTS = 4; // 5 nodes (0..4)
 const INV_NODE_MASS = 20;
-const STEP_DT = 1 / 960;
+const STEP_DT = isMobileDevice ? 1 / 360 : 1 / 960;
 const SOLVER_ITERS = 2;
-const RIBBON_ROWS = 72;
+const RIBBON_ROWS = isMobileDevice ? 36 : 72;
 const CAMERA_FOV = 24;
 const BASE_STRAP_WIDTH = 0.36;
 const SPLIT_RING_RADIUS = 0.095;
@@ -1084,7 +1089,8 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
   function updateFraming(isInitial = false) {
     const w = Math.max(1, container.clientWidth);
     const h = Math.max(1, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const maxDpr = isMobileDevice ? 1.2 : 1.75;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     renderer.setSize(w, h, false);
 
     const aspect = w / h;
@@ -1360,12 +1366,36 @@ export function initLanyard3D(containerId = 'lanyard-canvas-container') {
   const resizeObs = new ResizeObserver(() => updateFraming(false));
   resizeObs.observe(container);
 
+  // Performance & Battery Optimization:
+  // Pause WebGL rendering & physics sub-stepping when scrolled out of view or tab hidden
+  let isCanvasVisible = true;
+  if ('IntersectionObserver' in window) {
+    const visibilityObs = new IntersectionObserver((entries) => {
+      isCanvasVisible = entries[0].isIntersecting;
+      if (isCanvasVisible) {
+        lastTime = performance.now();
+      }
+    }, { threshold: 0.05 });
+    visibilityObs.observe(container);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && isCanvasVisible) {
+      lastTime = performance.now();
+    }
+  });
+
   // Animation Loop
   let lastTime = performance.now();
   let elapsed = 0;
 
   function animate(now) {
     requestAnimationFrame(animate);
+
+    // Skip entire render cycle if not visible to save mobile CPU/GPU
+    if (!isCanvasVisible || document.hidden) {
+      return;
+    }
 
     const dt = clamp((now - lastTime) / 1000, 1 / 240, 1 / 30);
     lastTime = now;

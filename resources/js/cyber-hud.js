@@ -9,12 +9,13 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { alpha: true });
   if (!ctx) return;
 
   let width = 0;
   let height = 0;
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  let dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
   let binaryColumns = [];
   let spectrumBars = [];
   let floatingNodes = [];
@@ -23,19 +24,19 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
     binaryColumns = [];
     spectrumBars = [];
     floatingNodes = [];
+    isMobile = window.innerWidth < 768;
 
-    // 1. Binary Rain Columns (Concentrated in center-to-right: 42% -> 92% width)
-    const colSpacing = 22;
-    const startX = Math.floor(width * 0.41);
-    const endX = Math.floor(width * 0.93);
+    // 1. Binary Rain Columns (Concentrated in center-to-right)
+    const colSpacing = isMobile ? 32 : 22;
+    const startX = Math.floor(width * (isMobile ? 0.35 : 0.41));
+    const endX = Math.floor(width * 0.94);
 
     for (let x = startX; x < endX; x += colSpacing) {
-      // Normalize horizontal factor (strongest behind the ID card around 62% - 82%)
       const normX = (x - startX) / Math.max(1, endX - startX);
       const intensity = Math.sin(normX * Math.PI);
-      if (Math.random() > 0.82) continue;
+      if (Math.random() > (isMobile ? 0.72 : 0.82)) continue;
 
-      const length = 10 + Math.floor(Math.random() * 16);
+      const length = isMobile ? (8 + Math.floor(Math.random() * 8)) : (10 + Math.floor(Math.random() * 16));
       const digits = [];
       for (let i = 0; i < length; i++) {
         digits.push(Math.random() > 0.5 ? '1' : '0');
@@ -44,8 +45,8 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
       binaryColumns.push({
         x,
         y: Math.random() * height,
-        speed: 22 + Math.random() * 34,
-        fontSize: Math.random() > 0.35 ? 13 : 11,
+        speed: (isMobile ? 18 : 22) + Math.random() * 30,
+        fontSize: isMobile ? 11 : (Math.random() > 0.35 ? 13 : 11),
         length,
         digits,
         isGreen: Math.random() > 0.32,
@@ -54,10 +55,10 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
       });
     }
 
-    // 2. Bottom HUD Data Spectrum / Frequency Bars (Center-left to center-right)
-    const barCount = Math.min(64, Math.floor(width / 18));
-    const barZoneStart = width * 0.24;
-    const barZoneWidth = width * 0.42;
+    // 2. Bottom HUD Data Spectrum / Frequency Bars
+    const barCount = isMobile ? Math.min(22, Math.floor(width / 20)) : Math.min(56, Math.floor(width / 18));
+    const barZoneStart = width * (isMobile ? 0.15 : 0.24);
+    const barZoneWidth = width * (isMobile ? 0.7 : 0.42);
     const barStep = barZoneWidth / barCount;
 
     for (let i = 0; i < barCount; i++) {
@@ -65,30 +66,31 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
       const envelope = Math.sin(norm * Math.PI);
       spectrumBars.push({
         x: barZoneStart + i * barStep,
-        baseHeight: 10 + envelope * 58,
+        baseHeight: (isMobile ? 8 : 10) + envelope * (isMobile ? 36 : 56),
         freq: 1.5 + Math.random() * 2.5,
         phase: i * 0.28 + Math.random(),
         isGreen: i % 3 === 0,
       });
     }
 
-    // 3. Ambient Cyber Dust Nodes near the right glow & bottom terrain
-    const nodeCount = 36;
+    // 3. Ambient Cyber Dust Nodes
+    const nodeCount = isMobile ? 12 : 32;
     for (let i = 0; i < nodeCount; i++) {
       floatingNodes.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        r: 1 + Math.random() * 1.8,
-        vx: (Math.random() - 0.5) * 12,
-        vy: -8 - Math.random() * 14,
+        r: 1 + Math.random() * 1.5,
+        vx: (Math.random() - 0.5) * 10,
+        vy: -6 - Math.random() * 12,
         isGreen: Math.random() > 0.45,
-        alpha: 0.2 + Math.random() * 0.45,
+        alpha: 0.18 + Math.random() * 0.4,
       });
     }
   }
 
   function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    isMobile = window.innerWidth < 768;
+    dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = Math.floor(width * dpr);
@@ -119,9 +121,26 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
   }
 
   let lastTime = performance.now();
+  let lastRenderTime = 0;
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      lastTime = performance.now();
+      lastRenderTime = performance.now();
+    }
+  });
 
   function render(now) {
     requestAnimationFrame(render);
+
+    if (document.hidden) return;
+
+    // Frame pacing: limit to ~33fps on mobile to preserve battery and keep thermal low
+    if (isMobile && (now - lastRenderTime < 30)) {
+      return;
+    }
+    lastRenderTime = now;
+
     const dt = Math.min((now - lastTime) / 1000, 0.05);
     lastTime = now;
     const t = now * 0.001;
@@ -203,8 +222,8 @@ export function initCyberHudCanvas(canvasId = 'cyber-hud-canvas') {
     // =========================================================
     // C. DRAW BOTTOM CYBER WIREFRAME TERRAIN MESH & NODES
     // =========================================================
-    const rows = 7;
-    const cols = Math.max(24, Math.floor(width / 44));
+    const rows = isMobile ? 3 : 6;
+    const cols = isMobile ? Math.min(18, Math.floor(width / 24)) : Math.max(24, Math.floor(width / 44));
     const stepX = width / cols;
     const gridPts = [];
 

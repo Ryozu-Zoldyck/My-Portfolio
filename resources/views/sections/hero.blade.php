@@ -65,9 +65,9 @@
             <!-- Right 3D Interactive Lanyard Column -->
             <div class="lg:col-span-5 relative flex flex-col items-center justify-center">
                 <!-- Strong Neon Cyan & Matrix Cyber Green Radial Ambient Glow behind ID Card -->
-                <div class="absolute -top-10 -right-8 w-80 h-80 bg-[#00ff88]/35 rounded-full blur-[120px] -z-10 pointer-events-none animate-pulse"></div>
-                <div class="absolute -bottom-8 -left-6 w-80 h-80 bg-[#00f2fe]/35 rounded-full blur-[130px] -z-10 pointer-events-none"></div>
-                <div class="absolute inset-0 bg-gradient-to-tr from-[#00f2fe]/25 via-[#10b981]/25 to-[#00ff88]/30 rounded-3xl blur-[90px] -z-10 pointer-events-none"></div>
+                <div class="absolute -top-10 -right-8 w-80 h-80 rounded-full ambient-glow-green -z-10 pointer-events-none animate-pulse"></div>
+                <div class="absolute -bottom-8 -left-6 w-80 h-80 rounded-full ambient-glow-cyan -z-10 pointer-events-none"></div>
+                <div class="absolute inset-0 rounded-3xl ambient-glow-teal -z-10 pointer-events-none"></div>
 
                 <!-- 3D Lanyard Canvas Container -->
                 <div class="w-full relative rounded-3xl glass-panel p-2 shadow-[0_0_55px_rgba(0,255,136,0.18),0_0_90px_rgba(0,242,254,0.22)] overflow-hidden group">
