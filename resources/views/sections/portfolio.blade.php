@@ -76,7 +76,7 @@
                     <div class="flex items-center gap-3">
                         @if($proj['github_url'])
                         <a href="{{ $proj['github_url'] }}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full glass-icon-box flex items-center justify-center text-slate-300 hover:text-white transition-colors" title="Lihat Source Code">
-                            <i data-lucide="github" class="w-4 h-4"></i>
+                            <x-brand-icon name="github" class="w-4 h-4" />
                         </a>
                         @endif
                     </div>

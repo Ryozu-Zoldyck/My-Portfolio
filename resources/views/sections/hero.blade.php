@@ -50,12 +50,15 @@
                 </div>
 
                 <!-- Social Links & Presence -->
-                <div class="pt-6 border-t border-white/10 w-full flex flex-wrap items-center justify-between gap-4">
+                <div class="pt-6 border-t border-white/10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <span class="text-xs font-mono-code text-slate-400 uppercase tracking-widest">Connect with me:</span>
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
                         @foreach($profile['socials'] as $soc)
-                        <a href="{{ $soc['url'] }}" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl glass-icon-box text-slate-200 hover:text-cyan-300 flex items-center justify-center transition-all group hover:scale-110" title="{{ $soc['name'] }}">
-                            <i data-lucide="{{ $soc['icon'] }}" class="w-4 h-4 transition-transform group-hover:scale-110"></i>
+                        <a href="{{ $soc['url'] }}" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl glass-subcard text-slate-300 {{ $soc['hover'] ?? 'hover:text-cyan-300' }} transition-all group hover:scale-105 active:scale-95" 
+                           title="{{ $soc['name'] }}">
+                            <x-brand-icon :name="$soc['icon']" class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" />
+                            <span class="text-xs font-mono-code font-semibold tracking-wide">{{ $soc['name'] }}</span>
                         </a>
                         @endforeach
                     </div>

@@ -16,14 +16,28 @@
                 </div>
             </div>
 
-            <!-- Tech stack pill -->
-            <div class="hidden md:flex items-center gap-2 text-xs font-mono-code text-slate-400">
-                <span>Ditenagai oleh</span>
-                <span class="text-red-400 font-semibold">Laravel 12</span>
-                <span>•</span>
-                <span class="text-cyan-400 font-semibold">Three.js</span>
-                <span>•</span>
-                <span class="text-sky-400 font-semibold">Tailwind CSS</span>
+            <!-- Tech stack & Socials -->
+            <div class="flex flex-col sm:flex-row items-center gap-3 text-xs font-mono-code text-slate-400">
+                @if(isset($profile['socials']))
+                <div class="flex items-center gap-2">
+                    @foreach($profile['socials'] as $soc)
+                    <a href="{{ $soc['url'] }}" target="_blank" rel="noopener noreferrer" 
+                       class="w-8 h-8 rounded-lg glass-subcard text-slate-400 {{ $soc['hover'] ?? 'hover:text-white' }} flex items-center justify-center transition-all group hover:scale-110" 
+                       title="{{ $soc['name'] }}">
+                        <x-brand-icon :name="$soc['icon']" class="w-3.5 h-3.5" />
+                    </a>
+                    @endforeach
+                </div>
+                @endif
+                <span class="hidden lg:inline text-slate-600">•</span>
+                <div class="hidden md:flex items-center gap-2">
+                    <span>Ditenagai oleh</span>
+                    <span class="text-red-400 font-semibold">Laravel 12</span>
+                    <span>•</span>
+                    <span class="text-cyan-400 font-semibold">Three.js</span>
+                    <span>•</span>
+                    <span class="text-sky-400 font-semibold">Tailwind CSS</span>
+                </div>
             </div>
 
             <!-- Right actions -->

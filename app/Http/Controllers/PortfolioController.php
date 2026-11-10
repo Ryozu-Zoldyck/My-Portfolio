@@ -37,10 +37,30 @@ class PortfolioController extends Controller
                 ['label' => 'Tingkat Kepuasan', 'value' => '99%'],
             ],
             'socials' => [
-                ['name' => 'GitHub', 'icon' => 'github', 'url' => 'https://github.com/'],
-                ['name' => 'Instagram', 'icon' => 'instagram', 'url' => 'https://instagram.com/'],
-                ['name' => 'LinkedIn', 'icon' => 'linkedin', 'url' => 'https://linkedin.com/'],
-                ['name' => 'TikTok', 'icon' => 'video', 'url' => 'https://tiktok.com/'],
+                [
+                    'name' => 'GitHub',
+                    'icon' => 'github',
+                    'url' => 'https://github.com/Ryozu-Zoldyck',
+                    'hover' => 'hover:text-white hover:border-white/40 hover:shadow-[0_0_15px_rgba(255,255,255,0.25)]',
+                ],
+                [
+                    'name' => 'Instagram',
+                    'icon' => 'instagram',
+                    'url' => 'https://www.instagram.com/ryozu._/',
+                    'hover' => 'hover:text-pink-400 hover:border-pink-500/50 hover:shadow-[0_0_15px_rgba(244,114,182,0.3)]',
+                ],
+                [
+                    'name' => 'LinkedIn',
+                    'icon' => 'linkedin',
+                    'url' => 'https://linkedin.com/',
+                    'hover' => 'hover:text-sky-400 hover:border-sky-500/50 hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]',
+                ],
+                [
+                    'name' => 'TikTok',
+                    'icon' => 'tiktok',
+                    'url' => 'https://www.tiktok.com/@mie_ayamm__3',
+                    'hover' => 'hover:text-teal-300 hover:border-teal-400/50 hover:shadow-[0_0_15px_rgba(45,212,191,0.3)]',
+                ],
             ],
         ];
 

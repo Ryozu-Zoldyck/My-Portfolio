@@ -34,7 +34,7 @@
         <!-- Action Links -->
         <div class="pt-5 border-t border-white/15 flex flex-wrap items-center justify-end gap-3">
             <a id="modal-project-github" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl font-heading font-semibold text-xs text-white glass-tag flex items-center gap-2">
-                <i data-lucide="github" class="w-4 h-4"></i>
+                <x-brand-icon name="github" class="w-4 h-4" />
                 <span>Source Code</span>
             </a>
 
